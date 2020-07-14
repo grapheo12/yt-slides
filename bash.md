@@ -42,6 +42,8 @@
 
 ## Pipes and redirections { .allowframebreaks }
 
+- Everything in Linux is a file. `stdin`, `stdout` and other streams are also (kinda) files.
+
 - Shell commands (we'll see a few in a moment) generally spit there outputs to `stdout`
 and in some mode take input from `stdin`.
 
@@ -149,3 +151,131 @@ Example: to get the first 15 lines of a line, run:
 head -n15 file
 ```
 
+
+
+## grep { .allowframebreaks }
+
+- `grep` prints those lines in a given list of files that match a pattern.
+
+- Usage: `grep pattern filename`.
+
+- Another common usage is to pipe the output of some other command to grep.
+For example:
+
+```bash
+cat file | grep kharagpur
+```
+
+This will find all lines in a file that have the string "kharagpur" in it.
+
+- `pattern` can be a Regular Expression too.
+For example:
+
+```bash
+whois google.com | grep [Cc]ountry
+```
+
+will fetch the whois record of Google.com using whois CLI (installed separately)
+and from that record, will find out all string which have either "country" or "Country" in it.
+
+
+## which
+
+- Every command that you run in the shell actually is an executable located
+somewhere in your PATH (it is an environment variable, more on that later).
+
+- To find out which particular executable is being run, `which` is used.
+
+```bash
+$ which echo
+/usr/bin/echo
+```
+
+::: block
+
+### Resolving virtualenvs
+
+While working with multiple Python projects together, one might get confused
+as to what the current python binary is being used.
+At that time, running `which python` helps a lot.
+
+:::
+
+
+## cp, mv and mkdir
+
+- `cp some/path/file some/other/path` copies `file` from `some/path` to `some/other/path`.
+
+- To recursively copy a folder and all its files and subdirectories, we use `cp -r`.
+
+- The main job of `mv` is to move files and folders from one directory to the other.
+
+- Althought `mv file newname` renames the file `file` to `newname`.
+
+- Paths in cp and mv also support wildcards.
+For example, `cp yt-slides/*.pdf folder2/` copies only the pdf files.
+
+- `mkdir` makes directories. Usage: `mkdir existing/path/new_directory_to_make`.
+This creates a new directory `new_directory_to_make` under the existing path `existing/path`.
+
+- However, if the parent directory doesn't exist yet, we can create the whole hierarchy by using the `-p` flag.
+
+## rm and rmdir
+
+- `rmdir` removes empty directories.
+
+- `rm` is a general command for removal of files and folders.
+
+- To recursively delete, use the `-r` flag with `rm`.
+
+::: block
+
+### Warning
+
+NEVER RUN:
+
+```bash
+sudo rm -rf /
+```
+
+:::
+
+
+
+## wc, sort, shuf, ...
+
+These fall under the category of text manipulation programs.
+
+- `wc` returns the newline, word and byte count for each of the files that are passed to it.
+
+- We can get the individual newline, word or byte count by using `-l`, `-w` or `-c` flags respectively.
+
+- `sort` sorts the lines of a document in lexicographical order.
+Although the ordering can be changed using appropriate flags.
+
+- `sort -u` gives the unique lines in the document.
+
+- `shuf` randomly selects a few lines from a file. The number of lines to take can be passed using `-n<Number>` flag.
+
+- Other programs of this category are: `uniq`, `split` etc.
+
+
+## wget and curl
+
+- These programs are used to fetch resources from the internet.
+
+- `wget`, as the name suggests, performs only GET requests.
+
+- By default, wget saves the output to a file in the current directory.
+However, this can be changed using the `-o` flag.
+
+- cURL is a more generic tool. It can be used to perform arbitrary HTTP requests.
+
+For example, sending a POST request to an URL through curl is as follows:
+
+```bash
+curl -X POST -H 'Content-type: application/json'
+ -b '{"message": "Hello"}' http://url/endpoint
+```
+
+`-X` defines request method, `-H` defines headers, `-b` defines Request body. 
