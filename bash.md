@@ -275,7 +275,7 @@ For example, sending a POST request to an URL through curl is as follows:
 
 ```bash
 curl -X POST -H 'Content-type: application/json'
- -b '{"message": "Hello"}' http://url/endpoint
+ -d '{"message": "Hello"}' http://url/endpoint
 ```
 
 `-X` defines request method, `-H` defines headers, `-b` defines Request body. 
