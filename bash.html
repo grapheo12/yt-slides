@@ -1,0 +1,324 @@
+<!doctype html>
+<html >
+<head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!--[if lt IE 9]>
+                <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+        <![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+
+    <!-- <link rel="stylesheet" type="text/css" href="template.css" /> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/template.css" />
+
+    <link href="https://vjs.zencdn.net/5.4.4/video-js.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <!-- <script type='text/javascript' src='menu/js/jquery.cookie.js'></script> -->
+    <!-- <script type='text/javascript' src='menu/js/jquery.hoverIntent.minified.js'></script> -->
+    <!-- <script type='text/javascript' src='menu/js/jquery.dcjqaccordion.2.7.min.js'></script> -->
+
+    <!-- <link href="menu/css/skins/blue.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="menu/css/skins/graphite.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <link href="menu/css/skins/grey.css" rel="stylesheet" type="text/css" /> -->
+  
+    <!-- <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+        
+  
+    <!-- <script src="script.js"></script> -->
+  
+    <!-- <script src="jquery.sticky-kit.js "></script> -->
+    <script type='text/javascript' src='https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/js/jquery.cookie.js'></script>
+    <script type='text/javascript' src='https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/js/jquery.hoverIntent.minified.js'></script>
+    <script type='text/javascript' src='https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/js/jquery.dcjqaccordion.2.7.min.js'></script>
+
+    <link href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/css/skins/blue.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/css/skins/graphite.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/menu/css/skins/grey.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.rawgit.com/ryangrose/easy-pandoc-templates/948e28e5/css/elegant_bootstrap.css" rel="stylesheet" type="text/css" />
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+    <script src="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/script.js"></script>
+  
+    <script src="https://cdn.rawgit.com/diversen/pandoc-bootstrap-adaptive-template/959c3622/jquery.sticky-kit.js"></script>
+    <meta name="generator" content="pandoc" />
+  <meta name="author" content="github.com/grapheo12" />
+  <title>Basics of Shell Scripting</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+
+    
+    <div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <span class="doc-title">Basics of Shell Scripting</span>
+        <ul class="nav pull-right doc-info">
+                    <li><p class="navbar-text"><a href="github.com/grapheo12">github.com/grapheo12</a></p></li>
+                            </ul>
+      </div>
+    </div>
+  </div>
+    <div class="container">
+    <div class="row">
+            <div id="TOC" class="span3">
+        <div class="well toc">
+
+        <ul>
+        <li><a href="#introduction">Introduction</a><ul>
+        <li><a href="#what-is-a-shell">What is a Shell?</a></li>
+        <li><a href="#what-is-a-terminal-then">What is a Terminal then?</a></li>
+        <li><a href="#wait-what-is-tty">Wait! What is tty?</a></li>
+        <li><a href="#pipes-and-redirections">Pipes and redirections</a></li>
+        </ul></li>
+        <li><a href="#some-basic-commands">Some Basic Commands</a><ul>
+        <li><a href="#ls">ls</a></li>
+        <li><a href="#echo-and-printf">echo and printf</a></li>
+        <li><a href="#cat-head-and-tail">cat, head and tail</a></li>
+        <li><a href="#grep">grep</a></li>
+        <li><a href="#which">which</a></li>
+        <li><a href="#cp-mv-and-mkdir">cp, mv and mkdir</a></li>
+        <li><a href="#rm-and-rmdir">rm and rmdir</a></li>
+        <li><a href="#wc-sort-shuf">wc, sort, shuf, …</a></li>
+        <li><a href="#wget-and-curl">wget and curl</a></li>
+        </ul></li>
+        </ul>
+
+        </div>
+      </div>
+            <div class="span9">
+            <h1 id="introduction">Introduction</h1>
+<h2 id="what-is-a-shell">What is a Shell?</h2>
+<ul>
+<li><p>Shell is a program that let’s you run shell commands.</p></li>
+<li><p>A Shell is a command line interpreter, which runs your shell scripts.</p></li>
+<li><p>Shell <strong>is not equal</strong> to a Terminal.</p></li>
+<li>Examples:
+<ul>
+<li>tcsh</li>
+<li>fish</li>
+<li>Bourne - Again Shell (bash)</li>
+<li>zsh etc.</li>
+</ul></li>
+</ul>
+<h2 id="what-is-a-terminal-then">What is a Terminal then?</h2>
+<ul>
+<li><p>A terminal emulator is a graphical program that is used to run the shell.</p></li>
+<li><p>It emulates, although in a small window and with lots of add-ons, the tty interface.</p></li>
+<li>Examples:
+<ul>
+<li>GNOME Terminal</li>
+<li>Konsole</li>
+<li>urxvt</li>
+<li>Alacritty</li>
+<li>XTerm</li>
+<li>Termite etc.</li>
+</ul></li>
+</ul>
+<h2 id="wait-what-is-tty">Wait! What is tty?</h2>
+<ul>
+<li><p>tty (stands for Teletype) is text based interface to your operating system.</p></li>
+<li><p>On most Linux systems, you can use multiple teletype sessions and they can be accessed by hitting <code>Ctrl + Alt + F&lt;1-12&gt;</code>.</p></li>
+<li><p>What does a tty launch after you login into one? Yes, your default <em>shell</em>.</p></li>
+</ul>
+<h2 id="pipes-and-redirections" class="allowframebreaks">Pipes and redirections</h2>
+<ul>
+<li><p>Everything in Linux is a file. <code>stdin</code>, <code>stdout</code> and other streams are also (kinda) files.</p></li>
+<li><p>Shell commands (we’ll see a few in a moment) generally spit there outputs to <code>stdout</code> and in some mode take input from <code>stdin</code>.</p></li>
+<li><p>What this means, is that we can redirect the output of one command to the input of the other without creating an intermediate file.</p></li>
+<li><p>To do so we use the pipe (<code>|</code>).</p></li>
+<li><p>For example, suppose we write out something using <code>echo</code> and want to print the number of lines in it using <code>wc</code>. The command for that will be:</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="bu">echo</span> <span class="st">&quot;Lorel ipsum dolor sit amet.\nSic mundus creatus es&quot;</span> <span class="kw">|</span> <span class="fu">wc</span> -l</a></code></pre></div>
+<ul>
+<li>Operators for redirecting input/output from specific files / streams are:
+<ul>
+<li><code>&lt; inputfile</code> Redirects <code>stdin</code> to take input from a file.</li>
+<li><code>&gt; outputfile</code> Redirects the output to a new file (Existing file is overwritten).</li>
+<li><code>&gt;&gt; outputfile</code> Appends the output to a file.</li>
+</ul></li>
+<li>An useful pattern is to redirect <code>stderr</code> to <code>/dev/null</code> (the black hole of Linux), so that it doesn’t pollute your output: <code>2&gt;/dev/null</code>.</li>
+</ul>
+<h1 id="some-basic-commands">Some Basic Commands</h1>
+<h2 id="ls" class="allowframebreaks">ls</h2>
+<ul>
+<li><p>This is used to list files.</p></li>
+<li><p>Usage: <code>ls -[Options] [path]</code></p></li>
+<li><p>If a path is not given, current directory is assumed.</p></li>
+<li><p>Path can also contain wildcards. Example: <code>ls *.pdf</code> will list all the pdf files in the current directory.</p></li>
+<li><p>Options consists of one or a combination of character flags that invoke special functions:</p>
+<ul>
+<li><code>l</code>: List files with additional metadata</li>
+<li><code>a</code>: Show hidden files also. (Name begins with <code>.</code>)</li>
+<li><code>h</code>: Show file sizes in MBs and GBs instead of bytes.</li>
+<li><code>t</code>: Sort by date modified.</li>
+<li>… and many more.</li>
+</ul></li>
+<li><p>Multiple options can be combined as: <code>ls -lah</code>.</p></li>
+</ul>
+<p><em>Exercise:</em> Open a shell and create a file with the list of all files (both hidden and visible) sorted by the date modified.</p>
+<h2 id="echo-and-printf" class="allowframebreaks">echo and printf</h2>
+<ul>
+<li><p>These are used to print stuff (Obvious Lol!)</p></li>
+<li><p><code>printf</code> supports formatted output like C. <code>echo</code> doesn’t.</p></li>
+<li><p><code>echo</code> is more common in use than <code>printf</code>.</p></li>
+<li><p>Usage: <code>echo "some text"</code> or <code>printf "format string" "parameters"</code>.</p></li>
+</ul>
+<div class="block">
+<h3 id="single-and-double-quotes-in-bash">Single and double quotes in bash</h3>
+<p>In bash, both single and double quotes are allowed. However there is subtle difference in behaviour. Inside double quoted string, you can use sub-commands enclosed by <code>$()</code>. This is not possible with single quotes. Run:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="bu">echo</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">ls</span> /bin<span class="va">)</span><span class="st">&quot;</span></a></code></pre></div>
+<p>and</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="bu">echo</span> <span class="st">&#39;$(ls /bin)&#39;</span></a></code></pre></div>
+<p>to see the difference.</p>
+</div>
+<h2 id="cat-head-and-tail" class="allowframebreaks">cat, head and tail</h2>
+<figure>
+<img src="img/catheadtail.jpg" alt="This is what these commands mean, literally!" width="200" /><figcaption>This is what these commands mean, literally!</figcaption>
+</figure>
+<ul>
+<li><p><code>cat</code> stands for <code>conCATenate</code>. <code>cat file1 file2 file3</code> will output all the 3 files combined in the given sequence.</p></li>
+<li><p>However, in practice, people use <code>cat</code> to print out the 1 full file only.</p></li>
+<li><p><code>head</code> prints out the first few lines of a file and <code>tail</code> prints out the last few lines of a file.</p></li>
+<li><p>Both accept a parameter <code>-n&lt;Number&gt;</code>. This limits the output to <code>Number</code> number of lines.</p></li>
+</ul>
+<p>Example: to get the first 15 lines of a line, run:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">head</span> -n15 file</a></code></pre></div>
+<h2 id="grep" class="allowframebreaks">grep</h2>
+<ul>
+<li><p><code>grep</code> prints those lines in a given list of files that match a pattern.</p></li>
+<li><p>Usage: <code>grep pattern filename</code>.</p></li>
+<li><p>Another common usage is to pipe the output of some other command to grep. For example:</p></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">cat</span> file <span class="kw">|</span> <span class="fu">grep</span> kharagpur</a></code></pre></div>
+<p>This will find all lines in a file that have the string “kharagpur” in it.</p>
+<ul>
+<li><code>pattern</code> can be a Regular Expression too. For example:</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="ex">whois</span> google.com <span class="kw">|</span> <span class="fu">grep</span> [Cc]ountry</a></code></pre></div>
+<p>will fetch the whois record of Google.com using whois CLI (installed separately) and from that record, will find out all string which have either “country” or “Country” in it.</p>
+<h2 id="which">which</h2>
+<ul>
+<li><p>Every command that you run in the shell actually is an executable located somewhere in your PATH (it is an environment variable, more on that later).</p></li>
+<li><p>To find out which particular executable is being run, <code>which</code> is used.</p></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1">$ <span class="fu">which</span> echo</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="ex">/usr/bin/echo</span></a></code></pre></div>
+<div class="block">
+<h3 id="resolving-virtualenvs">Resolving virtualenvs</h3>
+<p>While working with multiple Python projects together, one might get confused as to what the current python binary is being used. At that time, running <code>which python</code> helps a lot.</p>
+</div>
+<h2 id="cp-mv-and-mkdir">cp, mv and mkdir</h2>
+<ul>
+<li><p><code>cp some/path/file some/other/path</code> copies <code>file</code> from <code>some/path</code> to <code>some/other/path</code>.</p></li>
+<li><p>To recursively copy a folder and all its files and subdirectories, we use <code>cp -r</code>.</p></li>
+<li><p>The main job of <code>mv</code> is to move files and folders from one directory to the other.</p></li>
+<li><p>Althought <code>mv file newname</code> renames the file <code>file</code> to <code>newname</code>.</p></li>
+<li><p>Paths in cp and mv also support wildcards. For example, <code>cp yt-slides/*.pdf folder2/</code> copies only the pdf files.</p></li>
+<li><p><code>mkdir</code> makes directories. Usage: <code>mkdir existing/path/new_directory_to_make</code>. This creates a new directory <code>new_directory_to_make</code> under the existing path <code>existing/path</code>.</p></li>
+<li><p>However, if the parent directory doesn’t exist yet, we can create the whole hierarchy by using the <code>-p</code> flag.</p></li>
+</ul>
+<h2 id="rm-and-rmdir">rm and rmdir</h2>
+<ul>
+<li><p><code>rmdir</code> removes empty directories.</p></li>
+<li><p><code>rm</code> is a general command for removal of files and folders.</p></li>
+<li><p>To recursively delete, use the <code>-r</code> flag with <code>rm</code>.</p></li>
+</ul>
+<div class="block">
+<h3 id="warning">Warning</h3>
+<p>NEVER RUN:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">sudo</span> rm -rf /</a></code></pre></div>
+</div>
+<h2 id="wc-sort-shuf">wc, sort, shuf, …</h2>
+<p>These fall under the category of text manipulation programs.</p>
+<ul>
+<li><p><code>wc</code> returns the newline, word and byte count for each of the files that are passed to it.</p></li>
+<li><p>We can get the individual newline, word or byte count by using <code>-l</code>, <code>-w</code> or <code>-c</code> flags respectively.</p></li>
+<li><p><code>sort</code> sorts the lines of a document in lexicographical order. Although the ordering can be changed using appropriate flags.</p></li>
+<li><p><code>sort -u</code> gives the unique lines in the document.</p></li>
+<li><p><code>shuf</code> randomly selects a few lines from a file. The number of lines to take can be passed using <code>-n&lt;Number&gt;</code> flag.</p></li>
+<li><p>Other programs of this category are: <code>uniq</code>, <code>split</code> etc.</p></li>
+</ul>
+<h2 id="wget-and-curl">wget and curl</h2>
+<ul>
+<li><p>These programs are used to fetch resources from the internet.</p></li>
+<li><p><code>wget</code>, as the name suggests, performs only GET requests.</p></li>
+<li><p>By default, wget saves the output to a file in the current directory. However, this can be changed using the <code>-o</code> flag.</p></li>
+<li><p>cURL is a more generic tool. It can be used to perform arbitrary HTTP requests.</p></li>
+</ul>
+<p>For example, sending a POST request to an URL through curl is as follows:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">curl</span> -X POST -H <span class="st">&#39;Content-type: application/json&#39;</span></a>
+<a class="sourceLine" id="cb9-2" title="2"> <span class="ex">-d</span> <span class="st">&#39;{&quot;message&quot;: &quot;Hello&quot;}&#39;</span> http://url/endpoint</a></code></pre></div>
+<p><code>-X</code> defines request method, <code>-H</code> defines headers, <code>-b</code> defines Request body.</p>
+            </div>
+    </div>
+  </div>
+  <script src="https://vjs.zencdn.net/5.4.4/video.js"></script>
+
+</body>
+</html>
