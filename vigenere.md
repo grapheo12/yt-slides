@@ -285,8 +285,8 @@ $MI_c(x, y) = \frac{\sum_{i = 0}^{25} f_i f'_i}{n n'} = \sum p_i p'_i$
 
 ## Thank You!
 
-This slide deck is available on Github:
+This slide deck is available on my website:
+
+![grapheo12.github.io/yt-slides/vigenere.html](grapheo12.github.io/yt-slides/vigenere.html)
 
 Source code: [github.com/grapheo12/yt-slides/blob/master/vigenere.md](github.com/grapheo12/yt-slides/blob/master/vigenere.md)
-
-Compiled version: [github.com/grapheo12/yt-slides/blob/master/vigenere.html](github.com/grapheo12/yt-slides/blob/master/vigenere.html)
