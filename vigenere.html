@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Shubham Mishra">
+  <title>Classical Cryptanalysis</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Classical Cryptanalysis</h1>
+  <p class="author">Shubham Mishra</p>
+</section>
+
+<section>
+<section id="cryptography-primer" class="title-slide slide level1">
+<h1>Cryptography primer</h1>
+
+</section>
+<section id="problem-of-talking-through-insecure-channel" class="slide level2">
+<h2>Problem of talking through insecure channel</h2>
+<p><img data-src="img/clear.png" /></p>
+</section>
+<section id="message-sent-with-encryption" class="slide level2">
+<h2>Message sent with encryption</h2>
+<p><img data-src="img/crypto.png" /></p>
+</section>
+<section id="semi-formally-speaking" class="slide level2">
+<h2>Semi-formally speaking</h2>
+<p>Each party has a <strong>secret</strong> key <span class="math inline">\(K\)</span> and and algorithm (or function) <span class="math inline">\(f\)</span>, such that, give a message <span class="math inline">\(m\)</span>, we can generate a ciphertext <span class="math inline">\(c = f(m, K)\)</span> <em>easily</em>, but it is difficult to know <span class="math inline">\(m\)</span> or <span class="math inline">\(k\)</span>, given just the ciphertext <span class="math inline">\(c\)</span>.</p>
+<p>Then, even through an insecure channel, we can transmit <span class="math inline">\(c\)</span>. No eavesdropper will be able to decipher the underlying message.</p>
+</section>
+<section id="some-caveats" class="slide level2">
+<h2>Some caveats…</h2>
+<ul>
+<li>How do I transmit the key to each party safely?</li>
+<li>The encryption algorithm <span class="math inline">\(f\)</span> must be kept public (Kerkchoff’s principle). Keeping it secret doesn’t provide any extra security.</li>
+</ul>
+</section>
+<section id="but-most-importantly." class="slide level2">
+<h2>But most importantly….</h2>
+<p style="color: red;">
+How do I guarantee that my function <span class="math inline">\(f\)</span> does not leak information about <span class="math inline">\(m\)</span> and <span class="math inline">\(k\)</span>?
+</p>
+</section></section>
+<section>
+<section id="cryptanalysis" class="title-slide slide level1">
+<h1>Cryptanalysis</h1>
+
+</section>
+<section id="branches-of-the-field" class="slide level2">
+<h2>Branches of the field</h2>
+<p><strong>Cryptography</strong>: How do I <span style="color: red;">make</span> these cryptographic algorithms?</p>
+<p><strong>Cryptanalysis</strong>: How do I <span style="color: red;">break</span> these cryptographic algorithms?</p>
+<p><strong>Cryptology</strong> = Cryptography + Cryptanalysis</p>
+</section>
+<section id="types-of-attack-models" class="slide level2">
+<h2>Types of attack models</h2>
+<ul>
+<li>Ciphertext only</li>
+<li>Known plaintext</li>
+<li>Chosen ciphertext</li>
+<li>Chosen plaintext</li>
+</ul>
+</section>
+<section id="ciphertext-only" class="slide level2">
+<h2>Ciphertext only</h2>
+<p>Attacker possesses a string of ciphertext</p>
+</section>
+<section id="known-plaintext" class="slide level2">
+<h2><span style="color: red;">Known</span> plaintext</h2>
+<p>Attacker possesses a string of plaintext and the corresponding ciphertext.</p>
+</section>
+<section id="chosen-plaintext" class="slide level2">
+<h2><span style="color: green;">Chosen</span> plaintext</h2>
+<p>Attacker can choose plaintext and obtain the corresponding ciphertexts.</p>
+</section>
+<section id="chosen-ciphertext" class="slide level2">
+<h2><span style="color: green;">Chosen</span> ciphertext</h2>
+<ul>
+<li>The attacker has access to the <span style="color: red;">decryption oracle</span> (a blackbox that does the decryption).</li>
+<li>The attacker can choose ciphertext and use the oracle to get the corresponding plaintexts</li>
+</ul>
+</section>
+<section id="order-of-powers-of-attackers" class="slide level2">
+<h2>Order of Powers of Attackers</h2>
+<p>Chosen ciphertext &gt; Chosen plaintext &gt; Known plaintext &gt; Ciphertext only</p>
+</section></section>
+<section>
+<section id="shift-ciphers" class="title-slide slide level1">
+<h1>Shift Ciphers</h1>
+
+</section>
+<section id="some-notations-and-conventions" class="slide level2">
+<h2>Some notations and conventions</h2>
+<ul>
+<li>Our plaintext and ciphertext will come from lowercase English aplhabets only (no numbers or spaces).</li>
+<li>Each letter in <code>[a-z]</code> can be mapped to <code>[0-25]</code>. We will use them interchangeably.</li>
+<li>All additions are modulo 26. We are working in <span class="math inline">\(\mathbb{Z}_{26}\)</span>.</li>
+</ul>
+</section>
+<section id="the-cipher" class="slide level2">
+<h2>The Cipher</h2>
+<ul>
+<li><strong>Encryption</strong>: <span class="math inline">\(E_K (m) = (m + K) mod 26\)</span></li>
+<li><strong>Decryption</strong>: <span class="math inline">\(D_K (c) = (c - K) mod 26\)</span></li>
+</ul>
+<p>For example, if my key is <code>'c'</code> or <code>2</code>, the string <span style="color: red;"><code>hellocryptography</code></span> encrypts to <span style="color: green;"><code>jgnnqetarvqitcrja</code></span>.</p>
+</section>
+<section id="brute-force" class="slide level2">
+<h2>Brute-force</h2>
+<ul>
+<li><p>One way to break the cipher will be to try out every possible key. There are 26 in total. So it is doable.</p></li>
+<li><p>However, it depends on whether you can get the meaning of the underlying message when you are decrypting. And this technique doesn’t scale that well with the size of the alphabet.</p></li>
+</ul>
+</section>
+<section id="statistical-approach" class="slide level2">
+<h2>Statistical approach</h2>
+<ul>
+<li>Notice that, if for any single letter, we can find out what it maps to in the ciphertext, then we are done.</li>
+<li>Also, the letter-frequency in the plaintext and the ciphertext will follow the same pattern. But the labels will be different.</li>
+</ul>
+</section>
+<section id="letter-frequencies-in-english-language" class="slide level2">
+<h2>Letter frequencies in English language</h2>
+<ul>
+<li>E occurs with highest probability: 0.12</li>
+<li>T, A, O, I, N, S, H, R occur with 0.06 - 0.09 probability</li>
+<li>D, L with 0.04</li>
+<li>C, M, U, W, F, G, Y, P, B with 0.015 - 0.028</li>
+<li>V, K, J, X, Q, Z with &lt; 0.01</li>
+</ul>
+<p>Similar distribution exists for bigrams and trigrams as well.</p>
+</section>
+<section>
+<div style="background-color: white;">
+<img data-src="img/freq.svg" />
+</div>
+</section>
+<section id="the-statistical-attack" class="slide level2">
+<h2>The statistical attack</h2>
+<p>Assuming the underlying message is written in common English:</p>
+<ul>
+<li>Find out the frequency distribution of the ciphertext at hand.</li>
+<li>The most occurring letter is likely to be the encryption of ‘e’.</li>
+<li>Use that information to find out the key.</li>
+<li>You can cross-check with the mappings with other less frequent letters as well.</li>
+</ul>
+</section></section>
+<section>
+<section id="vigenere-cipher" class="title-slide slide level1">
+<h1>Vigenere cipher</h1>
+
+</section>
+<section id="polyalphabetic-cipher" class="slide level2">
+<h2>Polyalphabetic cipher</h2>
+<ul>
+<li><p>One weakness of the shift cipher class was that a particular letter of the alphabet always mapped to a single letter. Such ciphers with one-to-one mappings are called <strong>Monoalphabetic cipher</strong>.</p></li>
+<li><p>A notch higher in security are the <strong>polyalphabetic ciphers</strong>. We are going to discuss one of them.</p></li>
+</ul>
+</section>
+<section id="encryption-scheme" class="slide level2">
+<h2>Encryption scheme</h2>
+<ul>
+<li><p>The key, instead of being a single letter (or number), is a word (a tuple of numbers) in this case.</p></li>
+<li><p>We take the plaintext and then repeat our keyword such that it becomes as long as our plaintext. Then we simply letters of the same index together to get the ciphertext.</p></li>
+</ul>
+</section>
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<p><img data-src="img/vigenere.png" /></p>
+</section>
+<section>
+<ul>
+<li>Notice how the 1st ‘d’ and the 2nd ‘d’ map to 2 different letters.</li>
+<li>Also, ‘d’ and ‘i’ map to same letter.</li>
+</ul>
+</section>
+<section id="attacking-vigenere-cipher" class="slide level2">
+<h2>Attacking Vigenere cipher</h2>
+<ul>
+<li>Brute force is out of question. It will be of exponential complexity.</li>
+<li>Statistical attack that we used for Shift ciphers won’t work due to many-to-many mapping.</li>
+</ul>
+<p>In fact, for years, Vigenere was thought to be unbreakable!</p>
+</section>
+<section id="kasiski-test" class="slide level2">
+<h2>Kasiski Test</h2>
+<ul>
+<li><p>This is a heuristic approach that gives some probable lengths of the key (let’s call it <span class="math inline">\(m\)</span>).</p></li>
+<li><p>Note that, same pieces of plaintext separated by a distance of a multiple of the key length, will map to the same ciphertext.</p></li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p>Hence, we look for repeating patterns in the ciphertext and note down the distances between them (we’ll call these <span class="math inline">\(\delta_i\)</span>).</p></li>
+<li><p>We find the gcd of these distances. We have <span class="math inline">\(m | \delta_i \implies m | gcd(\delta_i)\)</span>.</p></li>
+<li><p>How big a pattern you should use is entirely based on trial-and-error. Usually, the smaller the pattern size, the more chance of getting a false positive.</p></li>
+</ul>
+</section>
+<section id="index-of-coincidence" class="slide level2">
+<h2>Index of coincidence</h2>
+<ul>
+<li>It is used to confirm the <span class="math inline">\(m\)</span> values output by Kasiski test.</li>
+<li>Index of coincidence <span class="math inline">\(I_c\)</span> of a string <span class="math inline">\(x = x_1 x_2 x_3 ... x_n\)</span> is defined as the probability that 2 random elements of <span class="math inline">\(x\)</span> are identical.</li>
+<li>Let’s denote the frequency of each of the 26 letters by <span class="math inline">\(f_i\)</span>. Then by total probability, we can say: <span class="math inline">\(I_c(x) = \frac{\sum_{i = 0}^{25} \binom{f_i}{2}}{\binom{n}{2}} \approx \sum p_i^2\)</span></li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p>For a piece of text written in English language, <span class="math inline">\(I_c\)</span> comes out to be around <span style="color: red;">0.065</span>.</p></li>
+<li><p>For a random piece of text, assuming uniform distribution of letters, <span class="math inline">\(I_c \approx\)</span> <span style="color: green;">0.038</span>.</p></li>
+<li><p>So there is a big jump!</p></li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p>Let us denote the ciphertext as <span class="math inline">\(y = y_1 y_2 ... y_n\)</span>.</p></li>
+<li><p>For any integer <span class="math inline">\(m\)</span>, let us split the ciphertext into <span class="math inline">\(m\)</span> strings, by picking elements <span class="math inline">\(m\)</span> distance apart:</p></li>
+</ul>
+<p><span class="math inline">\(Y_1 = y_1 y_{m + 1} y_{2m + 1} ...\)</span></p>
+<p><span class="math inline">\(Y_2 = y_2 y_{m + 2} y_{2m + 2} ...\)</span></p>
+<p><span class="math inline">\(...\)</span></p>
+<p><span class="math inline">\(Y_m = y_m y_{2m} y_{3m} ...\)</span></p>
+</section>
+<section>
+<ul>
+<li><p>If indeed <span class="math inline">\(m\)</span> is the key length, then notice that each of <span class="math inline">\(Y_i\)</span> is an instance of <strong>Shift cipher</strong>.</p></li>
+<li><p>Hence there letter statistics is the same as that of English language.</p></li>
+<li><p>Hence, in that case, <span class="math inline">\(I_c(Y_i) \approx 0.065\)</span></p></li>
+<li><p>But if <span class="math inline">\(m\)</span> is not the key length, we will not see such statistics. In practice, the <span class="math inline">\(I_c\)</span> remains around <span class="math inline">\(0.04\)</span>.</p></li>
+<li><p>Thus we can get a confirmation on the key lengths output by Kasiski test.</p></li>
+</ul>
+</section>
+<section id="mutual-index-of-coincidence" class="slide level2">
+<h2>Mutual Index of Coincidence</h2>
+<ul>
+<li><p>Our next and final task is to find the key <span class="math inline">\(K\)</span>.</p></li>
+<li><p>Using mutual index of coincidence, we will not be able to find the key exactly, but the relative difference between the letters of the key will be known.</p></li>
+<li><p>For example, we will get the information like the second character of the key is 5 letters ahead of the first and so on.</p></li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p>Mutual Index of coincidence between 2 strings is defined as the probability that 2 random characters picked from each of the strings is same.</p></li>
+<li><p>Suppose the strings are <span class="math inline">\(x = x_1 x_2 x_3 ... x_n\)</span> and <span class="math inline">\(y = y_1 y_2 ... y_n&#39;\)</span> and the corresponding letter frequencies are <span class="math inline">\(f_i\)</span> and <span class="math inline">\(f&#39;_i\)</span> then:</p></li>
+</ul>
+<p><span class="math inline">\(MI_c(x, y) = \frac{\sum_{i = 0}^{25} f_i f&#39;_i}{n n&#39;} = \sum p_i p&#39;_i\)</span></p>
+</section>
+<section>
+<ul>
+<li><p>If both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> have the same distribution of letters, mutual index essentially becomes the index of coincidence (well, approximately!).</p></li>
+<li><p>So, if that is the case, then in case of English language-like strings, we will get the mutual index of coincidence as <span style="color: red;">0.065</span>.</p></li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p>Remember the <span class="math inline">\(Y_i\)</span>’s we created in the Index of coincidence test.</p></li>
+<li><p>We will now calculate the <span class="math inline">\(MI_c(1, j)\)</span> for every <span class="math inline">\(j \neq 1\)</span>.</p></li>
+<li><p>If <span class="math inline">\(MI_c(1, j) \approx 0.065\)</span>, we can be sure that <span class="math inline">\(Y_1\)</span> and <span class="math inline">\(Y_j\)</span> come from the same distribution.</p></li>
+<li><p>Which can only happen if they have the same amount of shifts. That is, the key letters in position <span class="math inline">\(1\)</span> and <span class="math inline">\(j\)</span> are the same.</p></li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p>If the <span class="math inline">\(MI_c\)</span> is significantly different, then possibly <span class="math inline">\(Y_1\)</span> and <span class="math inline">\(Y_j\)</span> are not having the same letter.</p></li>
+<li><p>To find the relative difference between them, we keep shifting <span class="math inline">\(Y_1\)</span> by <span class="math inline">\(1, 2, ..., 25\)</span>.</p></li>
+<li><p>Let’s say that for shift by <span class="math inline">\(p\)</span>, <span class="math inline">\(MI_c\)</span> became close to <span class="math inline">\(0.065\)</span>.</p></li>
+<li><p>This would mean that there is a high chance that the <span class="math inline">\(j^{th}\)</span> letter of the key is <span class="math inline">\(p\)</span> ahead of the <span class="math inline">\(1^{st}\)</span> letter.</p></li>
+</ul>
+</section>
+<section id="revealing-the-key" class="slide level2">
+<h2>Revealing the key</h2>
+<ul>
+<li><p>We will run this process for all <span class="math inline">\(Y_j\)</span>, thereby calculating the relative differences among the letters of the key with respect to the <span class="math inline">\(1^{st}\)</span> letter.</p></li>
+<li><p>The only job now is to determine what the <span class="math inline">\(1^{st}\)</span> letter is.</p></li>
+<li><p>This can be easily brute-forced. We can try all 26 combinations.</p></li>
+</ul>
+</section>
+<section id="demerits-of-this-process" class="slide level2">
+<h2>Demerits of this process</h2>
+<ul>
+<li><p>This is a statistical attack. So there is not guarantee that the revealed key is 100% correct.</p></li>
+<li><p>It requires a substantial amount of ciphertext to become accurate.</p></li>
+</ul>
+</section>
+<section id="demo-time" class="slide level2">
+<h2>Demo time!!</h2>
+</section></section>
+<section>
+<section id="parting-words" class="title-slide slide level1">
+<h1>Parting words</h1>
+
+</section>
+<section id="references" class="slide level2">
+<h2>References</h2>
+<ul>
+<li><p>“Cryptography: Theory and Practice” by Douglas R. Stinson</p></li>
+<li><p>Prof. Debdeep Mukhopadhyay’s lecture on this topic in Cryptography and Network Security course (NPTEL)</p></li>
+</ul>
+</section>
+<section id="further-readings" class="slide level2">
+<h2>Further Readings:</h2>
+<ul>
+<li>Shanon’s theory of Entropy</li>
+<li>Unicity distance</li>
+<li>Diffie-Hellman Key Exchange</li>
+</ul>
+</section>
+<section id="thank-you" class="slide level2">
+<h2>Thank You!</h2>
+<p>This slide deck is available on Github:</p>
+<p>Source code: <a href="github.com/grapheo12/yt-slides/blob/master/vigenere.md">github.com/grapheo12/yt-slides/blob/master/vigenere.md</a></p>
+<p>Compiled version: <a href="github.com/grapheo12/yt-slides/blob/master/vigenere.html">github.com/grapheo12/yt-slides/blob/master/vigenere.html</a></p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2/js/reveal.js"></script>
+
+  // reveal.js plugins
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/zoom-js/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
