@@ -17,7 +17,7 @@ author: Shubham Mishra
 ## Semi-formally speaking
 
 Each party has a **secret** key $K$ and and algorithm (or function) $f$, such that, give a message $m$,
-we can generate a ciphertext $c = f(m, K)$ *easily*, but it is difficult to know $m$ or $k$, given just the ciphertext $c$.
+we can generate a ciphertext $c = f(m, K)$ *easily*, but it is difficult to know $m$ or $K$, given just the ciphertext $c$.
 
 Then, even through an insecure channel, we can transmit $c$. No eavesdropper will be able to decipher the underlying message.
 
@@ -134,7 +134,7 @@ Such ciphers with one-to-one mappings are called **Monoalphabetic cipher**.
 - The key, instead of being a single letter (or number), is a word (a tuple of numbers) in this case.
 
 - We take the plaintext and then repeat our keyword such that it becomes as long as our plaintext.
-Then we simply letters of the same index together to get the ciphertext.
+Then we simply add letters of the same index together to get the ciphertext.
 
 
 ## Example

@@ -44,7 +44,7 @@
 </section>
 <section id="semi-formally-speaking" class="slide level2">
 <h2>Semi-formally speaking</h2>
-<p>Each party has a <strong>secret</strong> key <span class="math inline">\(K\)</span> and and algorithm (or function) <span class="math inline">\(f\)</span>, such that, give a message <span class="math inline">\(m\)</span>, we can generate a ciphertext <span class="math inline">\(c = f(m, K)\)</span> <em>easily</em>, but it is difficult to know <span class="math inline">\(m\)</span> or <span class="math inline">\(k\)</span>, given just the ciphertext <span class="math inline">\(c\)</span>.</p>
+<p>Each party has a <strong>secret</strong> key <span class="math inline">\(K\)</span> and and algorithm (or function) <span class="math inline">\(f\)</span>, such that, give a message <span class="math inline">\(m\)</span>, we can generate a ciphertext <span class="math inline">\(c = f(m, K)\)</span> <em>easily</em>, but it is difficult to know <span class="math inline">\(m\)</span> or <span class="math inline">\(K\)</span>, given just the ciphertext <span class="math inline">\(c\)</span>.</p>
 <p>Then, even through an insecure channel, we can transmit <span class="math inline">\(c\)</span>. No eavesdropper will be able to decipher the underlying message.</p>
 </section>
 <section id="some-caveats" class="slide level2">
@@ -180,7 +180,7 @@ How do I guarantee that my function <span class="math inline">\(f\)</span> does 
 <h2>Encryption scheme</h2>
 <ul>
 <li><p>The key, instead of being a single letter (or number), is a word (a tuple of numbers) in this case.</p></li>
-<li><p>We take the plaintext and then repeat our keyword such that it becomes as long as our plaintext. Then we simply letters of the same index together to get the ciphertext.</p></li>
+<li><p>We take the plaintext and then repeat our keyword such that it becomes as long as our plaintext. Then we simply add letters of the same index together to get the ciphertext.</p></li>
 </ul>
 </section>
 <section id="example" class="slide level2">
