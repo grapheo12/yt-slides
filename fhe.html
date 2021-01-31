@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Shubham Mishra">
+  <title>Homomorphic Encryption</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Homomorphic Encryption</h1>
+  <p class="author">Shubham Mishra</p>
+</section>
+
+<section>
+<section id="classical-use-of-cryptography" class="title-slide slide level1">
+<h1>Classical Use of Cryptography</h1>
+
+</section>
+<section id="problem-of-talking-through-insecure-channel" class="slide level2">
+<h2>Problem of talking through insecure channel</h2>
+<p><img data-src="img/clear.png" /></p>
+</section>
+<section id="message-sent-with-encryption" class="slide level2">
+<h2>Message sent with encryption</h2>
+<p><img data-src="img/crypto.png" /></p>
+</section>
+<section id="semi-formally-speaking" class="slide level2">
+<h2>Semi-formally speaking</h2>
+<p>Each party has a <strong>secret</strong> key <span class="math inline">\(K\)</span> and and algorithm (or function) <span class="math inline">\(f\)</span>, such that, give a message <span class="math inline">\(m\)</span>, we can generate a ciphertext <span class="math inline">\(c = f(m, K)\)</span> <em>easily</em>, but it is difficult to know <span class="math inline">\(m\)</span> or <span class="math inline">\(K\)</span>, given just the ciphertext <span class="math inline">\(c\)</span>.</p>
+<p>Then, even through an insecure channel, we can transmit <span class="math inline">\(c\)</span>. No eavesdropper will be able to decipher the underlying message.</p>
+</section>
+<section id="the-cia-triad" class="slide level2">
+<h2>The CIA triad</h2>
+<p>Generally, in cryptography we try to ensure 3 security primitives:</p>
+<ul>
+<li><span style="color: red;"><strong>C</strong>onfidentiality</span>: Adversary should not be able to learn our secret message</li>
+<li><span style="color: green;"><strong>I</strong>ntegrity</span>: They also should not be able to tamper our message</li>
+<li><span style="color: aqua;"><strong>A</strong>vailability</span>: Our message should be readily accessible to the recipient without any downtime.</li>
+</ul>
+</section>
+<section>
+<p>But now we want to do many things more with crypto……</p>
+</section></section>
+<section>
+<section id="encrypted-computation" class="title-slide slide level1">
+<h1>Encrypted computation</h1>
+
+</section>
+<section id="computation-on-the-cloud" class="slide level2">
+<h2>Computation on the cloud</h2>
+<ul>
+<li><p>In today’s world, CPU-intensive workloads are carried out in high performance servers on the cloud.</p></li>
+<li><p>But the data on which they operate, often are very sensitive. So ideally, we don’t want to send these in clear to the server.</p></li>
+<li><p>Solution is to encrypt the data and then send.</p></li>
+<li><p><strong>But</strong> our computation algorithms do not operate on encrypted data.</p></li>
+<li><p>So we need to come up with schemes and modify our algorithms to support computation on encrypted data.</p></li>
+</ul>
+</section>
+<section id="problem-with-common-ciphers" class="slide level2">
+<h2>Problem with common ciphers</h2>
+<ul>
+<li><p>Encryption generally breaks the ordering and any kind of semantic meaning of the plaintext.</p></li>
+<li><p>This is not a problem generally, rather it’s an expected feature! However, it’s problematic for us.</p></li>
+<li><p>For example, suppose <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are integers and <span class="math inline">\(E\)</span> is an encryption function. Then, generally speaking,</p></li>
+</ul>
+<p><span class="math inline">\(E(a) + E(b) \neq E(a + b)\)</span></p>
+</section>
+<section id="homomorphic-encryption" class="slide level2">
+<h2>Homomorphic Encryption</h2>
+<ul>
+<li>The challenge is to contruct ciphers which support computation of arbitrary functions (maybe from a given Function Space).</li>
+</ul>
+<p><span class="math inline">\(E(f(a)) = \hat{f}(E(a))\)</span></p>
+<ul>
+<li><p>Such ciphers are said to perform <span style="color: green;">Homomorphic Encryption</span>.</p></li>
+<li><p>One of the earliest proponents of this idea is <strong>Craig Gentry</strong> from IBM.</p></li>
+</ul>
+</section>
+<section id="food-for-thought" class="slide level2">
+<h2>Food for thought</h2>
+<p><span style="color: red; font-size: 1.5em;">Can any type of function be computed over encrypted data?</span></p>
+<p>What must be the minimum complexity?</p>
+</section>
+<section>
+<ul>
+<li><p>You cannot do Binary Search or similar <span class="math inline">\(O(lg n)\)</span> algorithms.</p></li>
+<li><p>If you are able to do so, it means you have some partial information about the plaintext.</p></li>
+<li><p>For any good cipher, you don’t have this information.</p></li>
+<li><p>So any allowed algorithm must be more complex than <span class="math inline">\(O(lg n)\)</span>.</p></li>
+<li><p>Generally, the computation algorithms are expressed as <strong>circuits</strong>.</p></li>
+</ul>
+</section>
+<section id="classification" class="slide level2">
+<h2>Classification</h2>
+<p>There are 3 main types of Homomorphic Encryption:</p>
+<ul>
+<li><p><strong>Partially</strong> Homomorphic: Supports very limited operations (may / may not be unbounded number of times)</p></li>
+<li><p><strong>Somewhat</strong> Homomorphic: Supports limited operations that can be performed only a set number of times</p></li>
+<li><p><strong>Fully</strong> Homomorphic: supports any operation any number of times.</p></li>
+</ul>
+</section>
+<section id="bootstrapping" class="slide level2">
+<h2>Bootstrapping</h2>
+<ul>
+<li><p>FHE schemes introduce <span style="color: red;">noise</span>.</p></li>
+<li><p>If we compute too many operations, the noise becomes so high that the decryption becomes impossible.</p></li>
+<li><p>To mitigate that, a bootstrapping procedure is used.</p></li>
+</ul>
+</section>
+<section id="gentrys-bootstrapping" class="slide level2">
+<h2>Gentry’s Bootstrapping</h2>
+<ul>
+<li><p>Convert the decryption function into a circuit.</p></li>
+<li><p>Encrypt the private key (with some other key).</p></li>
+<li><p>Homomorphically compute the decryption function with the encrypted secret key and current (noisy) ciphertext.</p></li>
+<li><p>What you get back is another ciphertext but the noise is gone.</p></li>
+</ul>
+</section></section>
+<section>
+<section id="examples-of-he-schemes" class="title-slide slide level1">
+<h1>Examples of HE schemes</h1>
+
+</section>
+<section id="simple-example-rsa" class="slide level2">
+<h2>Simple example: RSA</h2>
+<ul>
+<li><p>Remember that, <span class="math inline">\(E(x) = x^e (mod n)\)</span></p></li>
+<li><p>So, <span class="math inline">\(E(x) \cdot E(y) = x^e \cdot y^e = (xy)^e = E(xy) (mod n)\)</span></p></li>
+</ul>
+<p>Which means, RSA supports the homomorphic multiplication.</p>
+</section>
+<section id="problems-with-rsa" class="slide level2">
+<h2>Problems with RSA</h2>
+<ul>
+<li>It is not fully homomorphic. You can’t really do the addition.</li>
+<li>RSA is not <strong>semantically secure</strong>.</li>
+<li>RSA depends on the fact that factoring a number is hard. But it is not true for quantum computers.</li>
+</ul>
+<p>Hence, we shall look into some post-quantum constructions.</p>
+</section>
+<section id="gsw-scheme" class="slide level2">
+<h2>GSW Scheme</h2>
+<ul>
+<li><p>Gentry-Sahai-Waters is a fully Homomorphic Construction.</p></li>
+<li><p>There are generally 2 types of FHE schemes currently. One type is based on GSW, the other one on BFV.</p></li>
+<li><p>GSW depends on problem known as <strong>Learning with Errors (LWE)</strong>.</p></li>
+</ul>
+</section>
+<section id="learning-with-errors" class="slide level2">
+<h2>Learning with Errors</h2>
+<p>Given integers <span class="math inline">\(q, n\)</span> and a vector <span class="math inline">\(\mathbf{s} \in \mathbb{Z}_q^n\)</span>, we construct samples using the following process:</p>
+<ul>
+<li>Select a random vector <span class="math inline">\(\mathbf{a} \in \mathbb{Z}_q^n\)</span> and a <em>small</em> Gaussian noise <span class="math inline">\(e \in (0, 1)\)</span></li>
+<li>Calculate <span class="math inline">\(t = (\mathbf{a} \cdot \mathbf{s}) / q + e\)</span></li>
+<li>Output <span class="math inline">\((\mathbf{a}, t)\)</span></li>
+</ul>
+</section>
+<section>
+<p>Given many such samples, the problem is to find <span class="math inline">\(\mathbf{s}\)</span>.</p>
+<p>Or in the decision version of the problem, the goal is to distinguish between randomly generated tuples <span class="math inline">\((\mathbf{a}, t)\)</span> and that generated by the above process.</p>
+<p>Regev showed that both can be reduced from each other.</p>
+<p>Both of these problems are hard.</p>
+</section>
+<section id="gsw-details" class="slide level2">
+<h2>GSW Details</h2>
+<ul>
+<li>The secret key is <span class="math inline">\(\mathbf{t} = [\mathbf{-s}, 1] \in \mathbb{Z}_q^n\)</span></li>
+<li>The public key <span class="math inline">\(A \in \mathbb{Z}_q^{n \times m}\)</span> is constructed as follows:</li>
+</ul>
+<p><img data-src="img/gsw.svg" /></p>
+<ul>
+<li><span class="math inline">\(B\)</span> is publicly known matrix and <span class="math inline">\(e\)</span> is a vector of small Gaussian errors.</li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p>Note that, <span class="math inline">\(tA = -sB + sB + e = e \approx 0\)</span></p></li>
+<li><p>Our message space is <span class="math inline">\(\lbrace 0, 1 \rbrace\)</span></p></li>
+<li><p>In addition to these we also have public gadget matrix <span class="math inline">\(G\)</span> and a corresponding function <span class="math inline">\(G^{-1}(.)\)</span> such that, <span class="math inline">\(G G^{-1} (M) = M\)</span> for any <span class="math inline">\(M \in \mathbb{Z}^{n \times m&#39;}\)</span>.</p></li>
+</ul>
+</section>
+<section id="encryption" class="slide level2">
+<h2>Encryption</h2>
+<ul>
+<li><p>Choose a random <span class="math inline">\(R \in \mathbb{Z}_q^{m \times m}\)</span>.</p></li>
+<li><p>This is done for key blinding purpose.</p></li>
+<li><p>Compute the ciphertext as <span class="math inline">\(C = AR + xG\)</span> where <span class="math inline">\(x\)</span> is the message bit.</p></li>
+</ul>
+<p>Note that <span class="math inline">\(tC = eR + xtG \approx xtG\)</span></p>
+</section>
+<section id="decryption" class="slide level2">
+<h2>Decryption</h2>
+<ul>
+<li><p>Construct <span class="math inline">\(w \in \mathbb{Z}_q^{1 \times n}\)</span> as <span class="math inline">\(w = [0, 0, ..., \lceil q/2 \rceil]\)</span></p></li>
+<li><p>Compute <span class="math inline">\(v = tCG^{-1}(w^T)\)</span></p></li>
+</ul>
+<p>Note that <span class="math inline">\(v \approx xtGG^{-1}(w^T) = xtw^T = x \lceil q/2 \rceil\)</span></p>
+<p>If <span class="math inline">\(v &lt; \lceil q/2 \rceil\)</span>, <span class="math inline">\(x = 0\)</span>, otherwise <span class="math inline">\(x = 0\)</span></p>
+</section>
+<section id="homomorphic-addition-xor" class="slide level2">
+<h2>Homomorphic Addition (XOR)</h2>
+<ul>
+<li><p>Let 2 bits be <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> and their encryptions be <span class="math inline">\(C_1\)</span> and <span class="math inline">\(C_2\)</span>.</p></li>
+<li><p>Define <span class="math inline">\(C^+ = C_1 + C_2\)</span></p></li>
+<li><p>Clearly, <span class="math inline">\(C^+ = A(R_1 + R_2) + (x_1 + x_2)G \implies tC^+ \approx (x_1 + x_2)tG\)</span></p></li>
+</ul>
+</section>
+<section id="homomorphic-multiplication-and" class="slide level2">
+<h2>Homomorphic Multiplication (AND)</h2>
+<ul>
+<li><p>Define <span class="math inline">\(C^{\times} = C_1 G^{-1}(C_2) = (AR + x_1G) G^{-1}(C_2)\)</span></p></li>
+<li><p>Clearly, <span class="math inline">\(tC^{\times} = t C_1 G^{-1}(C_2)\)</span></p></li>
+</ul>
+<p><span class="math inline">\(\approx x_1 t G G^{-1}(C_2) = x_1 t C_2 \approx x_1 x_2 t G\)</span></p>
+</section>
+<section id="problems" class="slide level2">
+<h2>Problems</h2>
+<ul>
+<li><p><strong>Ciphertext expansion</strong>: Even for a single bit, the ciphertext is huge.</p></li>
+<li><p><strong>Error propagation</strong>: For addition error propagates linearly. But for multiplication, it is exponential.</p></li>
+</ul>
+</section>
+<section id="references" class="slide level2">
+<h2>References</h2>
+<ol type="1">
+<li><a href="https://cims.nyu.edu/~regev/papers/lwesurvey.pdf">Regev’s paper on LWE</a></li>
+<li><a href="https://eprint.iacr.org/2013/340.pdf">GSW paper</a></li>
+<li><a href="https://www.youtube.com/watch?v=LlPXfy6bKIY&amp;feature=youtu.be&amp;ab_channel=SimonsInstitute">Mathematics of Lattices by Vindod Vaikuntanathan</a></li>
+<li><a href="https://crypto.stanford.edu/craig/craig-thesis.pdf">Craig Gentry’s PhD Thesis</a> <br>Some recent works:</li>
+<li><a href="https://eprint.iacr.org/2014/816.pdf">FHEW paper</a></li>
+<li><a href="https://eprint.iacr.org/2018/421.pdf">TFHE paper</a></li>
+<li><a href="https://eprint.iacr.org/2015/345.pdf">Multiparty Computation in FHE</a></li>
+</ol>
+</section>
+<section id="thank-you" class="slide level2">
+<h2>Thank You</h2>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2/js/reveal.js"></script>
+
+  // reveal.js plugins
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/zoom-js/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
