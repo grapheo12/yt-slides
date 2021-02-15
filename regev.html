@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Shubham Mishra">
+  <title>Distributed Decryption of Regev Cryptosystem</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Distributed Decryption of Regev Cryptosystem</h1>
+  <p class="author">Shubham Mishra</p>
+</section>
+
+<section>
+<section id="regev-cryptosystem" class="title-slide slide level1">
+<h1>Regev Cryptosystem</h1>
+
+</section>
+<section id="introduction" class="slide level2">
+<h2>Introduction</h2>
+<ul>
+<li>Introduced by Oded Regev</li>
+<li>This is a public-key cryptosystem based on Learning with Errors</li>
+</ul>
+</section>
+<section id="notations" class="slide level2">
+<h2>Notations</h2>
+<ul>
+<li>Let <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span> be integers</li>
+<li>and let <span class="math inline">\(q\)</span> be a prime (used as the modulus of our field).</li>
+<li>Let <span class="math inline">\(E\)</span> be a discrete random variable defined on <span class="math inline">\(\mathbb{Z}_q\)</span>. This will act as our error function.</li>
+<li>Our message space are bits, i.e., <span class="math inline">\(\lbrace 0, 1 \rbrace\)</span></li>
+</ul>
+</section>
+<section id="keys" class="slide level2">
+<h2>Keys</h2>
+<ul>
+<li><span style="color: red;">Private key:</span> An element <span class="math inline">\(\mathbf{s} \in (\mathbb{Z}_q)^n\)</span></li>
+<li><span style="color: green;">Public key:</span> A set consisting of <span class="math inline">\(m\)</span> samples <span class="math inline">\((\mathbf{a^i}, b^i)\)</span> where <span class="math inline">\(\mathbf{a^i}\)</span> is drawn uniformly from <span class="math inline">\((\mathbb{Z}_q)^n\)</span> and <span class="math inline">\(b^i = E + \mathbf{a^i \cdot s}\)</span></li>
+</ul>
+</section>
+<section id="encryption" class="slide level2">
+<h2>Encryption</h2>
+<ul>
+<li>Choose an random subset of the public key, let us call it <span class="math inline">\(S\)</span>.</li>
+<li>If the message bit is <span class="math inline">\(0\)</span>, ciphertext, <span class="math inline">\(c = \sum_S (\mathbf{a^i}, b^i)\)</span></li>
+<li>If the message bit is <span class="math inline">\(1\)</span>, ciphertext, <span class="math inline">\(c = (\sum_S \mathbf{a^i}, \lfloor q/2 \rfloor + \sum_S b^i)\)</span></li>
+</ul>
+</section>
+<section id="remarks" class="slide level2">
+<h2>Remarks</h2>
+<ul>
+<li><p>Note that all the elements of the public key set, as well as any ciphertext is a valid LWE sample under the secret key <span class="math inline">\(\mathbf{s}\)</span>.</p></li>
+<li><p>Also, the public key is just a collection of encryption of <span class="math inline">\(0\)</span> message bit.</p></li>
+<li><p>This technique is used in other places also to convert symmetric key cryptosystems to public key cryptosystems. For example, here we converted the vanilla LWE system (which is symmetric key) to Regev’s system.</p></li>
+</ul>
+</section>
+<section id="decryption" class="slide level2">
+<h2>Decryption</h2>
+<ul>
+<li>To decrypt a ciphertext <span class="math inline">\(c = (\mathbf{a}, b)\)</span>, compute the quantity <span class="math inline">\(d = b - \mathbf{a \cdot s}\)</span></li>
+<li>If <span class="math inline">\(d\)</span> is closer to <span class="math inline">\(0\)</span>, then the message is <span class="math inline">\(0\)</span>.</li>
+<li>If <span class="math inline">\(d\)</span> is closer to <span class="math inline">\(\lfloor q/2 \rfloor\)</span>, then the message is <span class="math inline">\(1\)</span>.</li>
+</ul>
+</section></section>
+<section>
+<section id="distributed-decryption" class="title-slide slide level1">
+<h1>Distributed Decryption</h1>
+
+</section>
+<section id="introduction-1" class="slide level2">
+<h2>Introduction</h2>
+<ul>
+<li>Our main goal here is to distribute the private key into multiple parts.</li>
+<li>Such that, even if one part is compromised, the adversary is not able to do decrypt any ciphertext.</li>
+</ul>
+</section>
+<section id="t-out-of-n" class="slide level2">
+<h2><span class="math inline">\(t\)</span> out of <span class="math inline">\(n\)</span></h2>
+<p>In a <span style="color: red;"><span class="math inline">\(t\)</span></span>-out-of-<span style="color: green;"><span class="math inline">\(n\)</span></span> setting, we want to split our secret key among <span style="color: green;"><span class="math inline">\(n\)</span></span> parties, such that, we shall be able to decrypt iff <span style="color: red;"><span class="math inline">\(\ge t\)</span></span> secret key shares or partial decryptions are present.</p>
+</section>
+<section id="methods-of-secret-sharing" class="slide level2">
+<h2>Methods of secret sharing</h2>
+<ul>
+<li><p>Generic <span class="math inline">\(t\)</span>-out-of-<span class="math inline">\(n\)</span> secret sharing can be done using <strong>Shamir Secret Sharing</strong>.</p></li>
+<li><p>However, here is a simple scheme for <span class="math inline">\(2\)</span>-out-of-<span class="math inline">\(2\)</span> sharing:</p></li>
+</ul>
+<p>Let <span class="math inline">\(s\)</span> be the secret key (in some group <span class="math inline">\((G, +)\)</span>). Let <span class="math inline">\(s_1\)</span> be a random element <span class="math inline">\(\in G\)</span>. Calculate <span class="math inline">\(s_2\)</span> such that <span class="math inline">\(s_1 + s_2 = s\)</span></p>
+<ul>
+<li><span class="math inline">\(s_1\)</span> and <span class="math inline">\(s_2\)</span> are the two shares.</li>
+</ul>
+</section>
+<section id="threshold-decryption" class="slide level2">
+<h2>Threshold Decryption</h2>
+<ul>
+<li><p>In this setting, no party wants to reveal his share of the secret key.</p></li>
+<li><p>Instead, during decryption, each party reveals a partial decryption, which is a function of the the message they receive after decrypting with their share of the secret key.</p></li>
+<li><p>Every party then gathers these partial decryptions and combines them to get the final decrypted message.</p></li>
+</ul>
+</section>
+<section id="simple-thresholdisation-of-regev" class="slide level2">
+<h2>Simple thresholdisation of Regev</h2>
+<ul>
+<li>Remember that the main step in decryption is calculating <span class="math inline">\(b - a \cdot s\)</span></li>
+<li>If <span class="math inline">\(s = s_1 + s_2\)</span>, <span class="math inline">\(b - a \cdot s = b - a \cdot s_1 - a \cdot s_2\)</span></li>
+<li>So for 2-out-of-2 threshold decryption, the 2 parties will get <span class="math inline">\(s_1\)</span> and <span class="math inline">\(s_2\)</span> as shares.</li>
+</ul>
+</section>
+<section>
+<ul>
+<li>At the time of decryption, they will calculate <span class="math inline">\(a \cdot s_i\)</span> and broadcast it.</li>
+<li>After the broadcast, both parties will have <span class="math inline">\(a \cdot s_1\)</span> and <span class="math inline">\(a \cdot s_2\)</span>.</li>
+<li>Thus they will be able to decrypt without revealing their shares.</li>
+</ul>
+</section>
+<section id="problem-with-this-scheme" class="slide level2">
+<h2>Problem with this scheme</h2>
+<ul>
+<li><p>Given enough number of <span class="math inline">\(b^j = a^j \cdot s_1\)</span> samples, we have a complete set of equations in the components of <span class="math inline">\(s_1\)</span>.</p></li>
+<li><p>Thus by solving, holder of <span class="math inline">\(s_2\)</span> will reveal what <span class="math inline">\(s_1\)</span> is.</p></li>
+</ul>
+</section>
+<section id="solution" class="slide level2">
+<h2>Solution</h2>
+<ul>
+<li>Do not directly broadcast <span class="math inline">\(a \cdot s_1\)</span>.</li>
+<li>Rather add some noise to it, ie, broadcast <span class="math inline">\(a \cdot s_1 + e\)</span> where <span class="math inline">\(e\)</span> is a small noise.</li>
+</ul>
+</section>
+<section>
+<ul>
+<li><p><span style="color: red;">Why does it still work?:</span> Because the decryption scheme in Regev is itself noisy and not deterministic. So an addition of error bounded by a small number, should not cause any problem with decryption.</p></li>
+<li><p><span style="color: green;">Why is it more secure:</span> By adding the noise, we are essentially creating LWE sample with secret key <span class="math inline">\(s_1\)</span>. So, by the security guarantee given by LWE problem, it is impossible to reveal <span class="math inline">\(s_1\)</span> in polytime.</p></li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2/js/reveal.js"></script>
+
+  // reveal.js plugins
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/zoom-js/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
