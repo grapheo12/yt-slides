@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Shubham Mishra">
+  <title>Project Seminar</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Project Seminar</h1>
+  <p class="author">Shubham Mishra</p>
+</section>
+
+<section id="topic" class="slide level2">
+<h2>Topic</h2>
+<p>Multiparty Post-Quantum Fully Homomorphic Encryption</p>
+</section>
+<section id="motivation" class="slide level2">
+<h2>Motivation</h2>
+<div style="font-size: 1.8rem;">
+<ul>
+<li><p>Today we want to perform heavy computations in the cloud without assuming confidentiality guarantee on the remote server. For that we need to use <span style="color: green;">Fully Homomorphic Encryption</span> techniques.</p></li>
+<li><p>In addition to that, we also want multiple parties to jointly perform such computations keeping the inputs secret. This is the classic setup of <span style="color: green;">Secure Multiparty Computation</span>.</p></li>
+<li><p>But current systems are slow and have huge ciphertext expansion issues. It is challenging to create efficient implementations of the same.</p></li>
+</ul>
+</div>
+</section>
+<section id="problem-definition" class="slide level2">
+<h2>Problem Definition</h2>
+<ul>
+<li>To create an efficient and scalable implementation of Fully Homomorphic Multiparty Computation System using existing established papers.</li>
+<li>To accelerate parts of the system using FPGAs and GPUs.</li>
+<li>If possible, propose improvements upon the existing schemes to reduce noise and ciphertext sizes.</li>
+</ul>
+</section>
+<section id="reading-list" class="slide level2">
+<h2>Reading list</h2>
+<ol type="1">
+<li><a href="https://cims.nyu.edu/~regev/papers/lwesurvey.pdf">Regev’s paper on LWE</a></li>
+<li><a href="https://eprint.iacr.org/2013/340.pdf">GSW paper</a></li>
+<li><a href="https://www.youtube.com/watch?v=LlPXfy6bKIY&amp;feature=youtu.be&amp;ab_channel=SimonsInstitute">Mathematics of Lattices by Vindod Vaikuntanathan</a></li>
+<li><a href="https://crypto.stanford.edu/craig/craig-thesis.pdf">Craig Gentry’s PhD Thesis</a></li>
+<li><a href="https://eprint.iacr.org/2014/816.pdf">FHEW paper</a></li>
+<li><a href="https://eprint.iacr.org/2018/421.pdf">TFHE paper</a></li>
+<li><a href="https://eprint.iacr.org/2015/345.pdf">Multiparty Computation in FHE</a></li>
+</ol>
+</section>
+<section id="works-done" class="slide level2">
+<h2>Works done</h2>
+<div style="font-size: 1.8rem;">
+<ol type="1">
+<li>Examined the inner workings of the TFHE library.</li>
+<li>Using Library’s internal APIs, demonstrated 2-out-of-2 Threshold Decryption of LWE and TLWE encryption schemes with various bounds of smudging noise.</li>
+<li>Attempted to propose a MPC Scheme based on Mukherjee-Wilchs’ paper with less ciphertext expansion. But ended up with a partially homomorphic scheme based on GSW which works extra assumption of Public Key Infrastructure.</li>
+</ol>
+</div>
+</section>
+<section id="next-plans" class="slide level2">
+<h2>Next plans</h2>
+<ul>
+<li>Complete t-out-of-n Threshold Decryption using TFHE.</li>
+<li>Complete noise vs modulus profiling and find out ways to reduce noise and modulus.</li>
+<li>Port Mukherjee-Wilchs’ scheme to TFHE and create an efficient and scalable implementation out of it.</li>
+<li>Help in porting FFT computations to FPGA.</li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2/js/reveal.js"></script>
+
+  // reveal.js plugins
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/zoom-js/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2/plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
