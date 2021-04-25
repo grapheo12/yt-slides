@@ -12,7 +12,7 @@ You are given a folder with hundreds of text files: [https://cse.iitkgp.ac.in/~m
 You need to sort each of these individual files in decreasing order (numerically), write the sorted files in a new **1.b.files.out** folder, and then merge these individual sorted files into a single sorted file (name it **1.b.out.txt**) which is sorted in decreasing order. Write a shell script which iterates over the given files and perform this task.
 
 
-## 3. Creating frequency distribution from a loarge file
+## 3. Creating frequency distribution from a large file
 
 You have a text file with aroung 1.5M lines ([https://cse.iitkgp.ac.in/~mainack/OS/assignments/2021/01/1c_input.txt.zip](https://cse.iitkgp.ac.in/~mainack/OS/assignments/2021/01/1c_input.txt.zip))
 
