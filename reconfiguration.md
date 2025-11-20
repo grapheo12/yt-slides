@@ -113,7 +113,7 @@ There's usually these patterns of reconfiguration protocols in literature:
 
 - Using an external master.
 - Making reconfiguration part of the log.
-- Staking systems.
+- Permissionless staking systems.
 
 
 ## Vertical Paxos
@@ -185,11 +185,65 @@ Clients in BFT need $f + 1$ responses.
 
 ![*Remember this?*](img/dyno-definitions.png)
 
-WIP
+---
 
+Assumptions:
+
+- Going from $c$ to $c + 1$, at least $Q_c$ $c$-correct replicas remain in $c + 1$.
+- G-correct assumption: $max(f_c) + 1$ replicas never leave the system.
+
+### Dyno-S
+
+- Tie config changes to view changes.
+
+- Every time a config change is committed, trigger a view change.
+
+- Get support from $Q_c$ from old config and $Q_{c+1}$ from new config.
+
+- Successful view change $\implies$ no progress possible in the lower views.
+
+- Simple; but has downtime.
+
+
+### Dyno
+
+- As soon as a new node sends a Join command, it is added in a temporary membership to start catch-up process.
+
+- Old config first commits and delivers a batch of membership requests.
+
+- On adding a new node, increase the config number and then send history of config changes to the new node(s).
+
+- New nodes start operating on receiving $2f_c + 1$ such history messages.
 
 
 ## Casper
 
+- Casper is like linear PBFT but applied to blockchain: Justify == First phase, Finalize == Second phase.
+
+- Safety is economical, if you finalize two conflicting blocks, $1/3rd$ of the validators get slashed.
+
+---
+
+- Config change is done by committing a new set of validators to blocks.
+
+- Old config: Validator set of the last finalized block.
+
+- New config: Validator set committed in the last finalized block.
+
+- Finalizing condition: Use union of $2/3rd$ of old config and $2/3rd$ of new config.
+
+---
+
+![](img/casper-reconfig.webp)
+
 
 # Are we done?
+
+- As you can see, BFT reconfiguration is not "simple".
+
+- Can we apply the Vertical/MatchMaker Paxos idea to simplify things?
+
+- Can rotating leader protocols help, with cheaper view changes?
+
+- Can we generalize the concept of reconfiguration? Think a partial order of configurations.
+

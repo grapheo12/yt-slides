@@ -172,7 +172,7 @@ literature:</p>
 <ul>
 <li>Using an external master.</li>
 <li>Making reconfiguration part of the log.</li>
-<li>Staking systems.</li>
+<li>Permissionless staking systems.</li>
 </ul>
 </section>
 <section id="vertical-paxos" class="title-slide slide level2">
@@ -252,17 +252,88 @@ responses.</p>
 <img data-src="img/dyno-definitions.png" alt="Remember this?" />
 <figcaption aria-hidden="true"><em>Remember this?</em></figcaption>
 </figure>
-<p>WIP</p>
+</section>
+<section class="slide level3">
+
+<p>Assumptions:</p>
+<ul>
+<li>Going from <span class="math inline">\(c\)</span> to <span
+class="math inline">\(c + 1\)</span>, at least <span
+class="math inline">\(Q_c\)</span> <span
+class="math inline">\(c\)</span>-correct replicas remain in <span
+class="math inline">\(c + 1\)</span>.</li>
+<li>G-correct assumption: <span class="math inline">\(max(f_c) +
+1\)</span> replicas never leave the system.</li>
+</ul>
+</section>
+<section id="dyno-s" class="slide level3">
+<h3>Dyno-S</h3>
+<ul>
+<li><p>Tie config changes to view changes.</p></li>
+<li><p>Every time a config change is committed, trigger a view
+change.</p></li>
+<li><p>Get support from <span class="math inline">\(Q_c\)</span> from
+old config and <span class="math inline">\(Q_{c+1}\)</span> from new
+config.</p></li>
+<li><p>Successful view change <span
+class="math inline">\(\implies\)</span> no progress possible in the
+lower views.</p></li>
+<li><p>Simple; but has downtime.</p></li>
+</ul>
+</section>
+<section id="dyno-1" class="slide level3">
+<h3>Dyno</h3>
+<ul>
+<li><p>As soon as a new node sends a Join command, it is added in a
+temporary membership to start catch-up process.</p></li>
+<li><p>Old config first commits and delivers a batch of membership
+requests.</p></li>
+<li><p>On adding a new node, increase the config number and then send
+history of config changes to the new node(s).</p></li>
+<li><p>New nodes start operating on receiving <span
+class="math inline">\(2f_c + 1\)</span> such history messages.</p></li>
+</ul>
 </section>
 
 <section id="casper" class="title-slide slide level2">
 <h2>Casper</h2>
+<ul>
+<li><p>Casper is like linear PBFT but applied to blockchain: Justify ==
+First phase, Finalize == Second phase.</p></li>
+<li><p>Safety is economical, if you finalize two conflicting blocks,
+<span class="math inline">\(1/3rd\)</span> of the validators get
+slashed.</p></li>
+</ul>
+</section>
+<section class="slide level3">
 
+<ul>
+<li><p>Config change is done by committing a new set of validators to
+blocks.</p></li>
+<li><p>Old config: Validator set of the last finalized block.</p></li>
+<li><p>New config: Validator set committed in the last finalized
+block.</p></li>
+<li><p>Finalizing condition: Use union of <span
+class="math inline">\(2/3rd\)</span> of old config and <span
+class="math inline">\(2/3rd\)</span> of new config.</p></li>
+</ul>
+</section>
+<section class="slide level3">
+
+<p><img data-src="img/casper-reconfig.webp" /></p>
 </section>
 </section>
 <section id="are-we-done" class="title-slide slide level1">
 <h1>Are we done?</h1>
-
+<ul>
+<li><p>As you can see, BFT reconfiguration is not “simple”.</p></li>
+<li><p>Can we apply the Vertical/MatchMaker Paxos idea to simplify
+things?</p></li>
+<li><p>Can rotating leader protocols help, with cheaper view
+changes?</p></li>
+<li><p>Can we generalize the concept of reconfiguration? Think a partial
+order of configurations.</p></li>
+</ul>
 </section>
     </div>
   </div>
