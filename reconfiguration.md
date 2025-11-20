@@ -246,4 +246,3 @@ Assumptions:
 - Can rotating leader protocols help, with cheaper view changes?
 
 - Can we generalize the concept of reconfiguration? Think a partial order of configurations.
-
