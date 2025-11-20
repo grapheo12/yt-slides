@@ -1,3 +1,6 @@
+reconfiguration.html: reconfiguration.md revealjs-template.html
+	pandoc -t revealjs --mathjax -s -o reconfiguration.html reconfiguration.md -V revealjs-url=https://unpkg.com/reveal.js -V theme=solarized -V slideNumber=true --slide-level 3
+
 bash1.html: bash.md revealjs-template.html
 	pandoc -t revealjs --mathjax -s -o bash1.html bash.md -V revealjs-url=https://unpkg.com/reveal.js@3.9.2
 

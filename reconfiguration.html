@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Shubham Mishra">
+  <meta name="dcterms.date" content="2025-11-20">
+  <title>Reconfiguration</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/theme/solarized.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Reconfiguration</h1>
+  <p class="subtitle">for SMR and its siblings</p>
+  <p class="author">Shubham Mishra</p>
+  <p class="date">November 20, 2025</p>
+</section>
+
+<section id="what-is-reconfiguration" class="title-slide slide level1">
+<h1>What is Reconfiguration?</h1>
+<p>A configuration is a set of node <span class="math inline">\(C =
+\{p_1, p_2, ..., p_N\}\)</span> executing a particular protocol.</p>
+<p>Reconfiguration deals with going from a old set of nodes <span
+class="math inline">\(C_{old}\)</span> to a new one <span
+class="math inline">\(C_{new}\)</span>.</p>
+</section>
+
+<section id="why-bother" class="title-slide slide level1">
+<h1>Why bother?</h1>
+<ul>
+<li><p>In a long running cluster, crashes are inevitable.</p></li>
+<li><p>Can’t stop the world to replace a node.</p></li>
+</ul>
+<p>Anecdote: One reason why Microsoft CCF hasn’t been able to use PBFT
+is because there is no standard way to change configuration.</p>
+</section>
+
+<section id="what-makes-it-hard" class="title-slide slide level1">
+<h1>What makes it hard?</h1>
+<ul>
+<li><p>New nodes need to catch up.</p></li>
+<li><p>Old nodes may die prematurely.</p></li>
+<li><p>Two majorities may commit different things.</p></li>
+<li><p>Who do clients talk to?</p></li>
+<li><p>What if you are lying about the new configuration?</p></li>
+<li><p>How much downtime can I tolerate?</p></li>
+<li><p>…</p></li>
+</ul>
+</section>
+
+<section>
+<section id="formalizing-requirements" class="title-slide slide level1">
+<h1>Formalizing Requirements</h1>
+
+</section>
+<section id="first-principles-safety" class="title-slide slide level2">
+<h2>First principles: Safety</h2>
+<p>What does safety mean with multiple configurations?</p>
+</section>
+<section id="is-it-ok-to-lose-data-between-configurations"
+class="slide level3">
+<h3>Is it ok to lose data between configurations?</h3>
+<ul>
+<li>Usually not 😅.</li>
+</ul>
+<ul>
+<li class="fragment">But maybe the old data has lost use.</li>
+</ul>
+<ul>
+<li class="fragment">Reconfiguration protocol: Simply startup the new
+cluster and kill the old one.</li>
+</ul>
+</section>
+<section id="is-it-ok-to-change-the-total-order" class="slide level3">
+<h3>Is it ok to change the total order?</h3>
+<ul>
+<li>Maybe ok… Think reconfiguring CRDT systems.</li>
+</ul>
+<ul>
+<li class="fragment">Or, if all commands were committed but not
+executed/delivered to the clients.</li>
+</ul>
+<ul>
+<li class="fragment">Reconfiguration protocol: Startup the new cluster,
+divert the client traffic and let one node from the old config replay
+the log in parallel to the new cluster.</li>
+</ul>
+<ul>
+<li class="fragment">However, if any command was delivered in the old
+configuration, we must preserve the prefix of the log ending at it.</li>
+</ul>
+</section>
+<section id="some-definitions" class="slide level3">
+<h3>Some definitions</h3>
+<ul>
+<li><p>A replica <span class="math inline">\(p\)</span> is “correct in
+<span class="math inline">\(c\)</span>” if <span
+class="math inline">\(p\)</span> is part of <span
+class="math inline">\(c\)</span> and is correct in <span
+class="math inline">\(c\)</span> (but may not be part of any other
+configuration).</p></li>
+<li><p><span class="math inline">\(p\)</span> is “<span
+class="math inline">\(c\)</span>-correct” if <span
+class="math inline">\(p\)</span> is correct in <span
+class="math inline">\(c\)</span>, <span class="math inline">\(c\)</span>
+is the latest config or, <span class="math inline">\(p\)</span> is in
+the <span class="math inline">\(c+1\)</span> config.</p></li>
+<li><p><span class="math inline">\(p\)</span> is <span
+class="math inline">\(g\)</span>-correct if it is correct in all
+configs.</p></li>
+<li><p><span class="math inline">\(p\)</span> is <span
+class="math inline">\(g_c\)</span>-correct if it is correct in all
+configs <span class="math inline">\(\geq c\)</span>.</p></li>
+</ul>
+</section>
+<section id="enhanced-total-order" class="slide level3">
+<h3>Enhanced Total Order</h3>
+<p>If a replica <span style="color: red;">correct in <span
+class="math inline">\(c\)</span></span> delivers request <span
+class="math inline">\(m\)</span> at some sequence number, and another
+replica <span style="color: green;">correct in <span
+class="math inline">\(c&#39;\)</span></span> delivers request <span
+class="math inline">\(m&#39;\)</span> in the same sequence number, then
+<span class="math inline">\(m = m&#39;\)</span> and <span
+class="math inline">\(c = c&#39;\)</span>.</p>
+</section>
+<section id="definitions-matter" class="slide level3">
+<h3>Definitions matter</h3>
+<figure>
+<img data-src="img/dyno-definitions.png"
+alt="well maybe not for CFT, but definitely for BFT" />
+<figcaption aria-hidden="true"><em>well maybe not for CFT, but
+definitely for BFT</em></figcaption>
+</figure>
+</section>
+</section>
+<section>
+<section id="patterns" class="title-slide slide level1">
+<h1>Patterns</h1>
+<p>There’s usually these patterns of reconfiguration protocols in
+literature:</p>
+<ul>
+<li>Using an external master.</li>
+<li>Making reconfiguration part of the log.</li>
+<li>Staking systems.</li>
+</ul>
+</section>
+<section id="vertical-paxos" class="title-slide slide level2">
+<h2>Vertical Paxos</h2>
+<ul>
+<li><p>Paxos with a twist: every ballot can have a new configuration of
+acceptors.</p></li>
+<li><p>Separate master node(s) that give a leader a ballot <span
+class="math inline">\(b\)</span>.</p></li>
+<li><p>Phase 1 replaced with finding if there’s any value voted for by
+in all ballots <span class="math inline">\(&lt; b\)</span> in all
+<em>previous configurations</em>.</p></li>
+<li><p>Later extended to Multi-Paxos in MatchMaker Paxos paper.</p></li>
+</ul>
+</section>
+
+<section id="delos" class="title-slide slide level2">
+<h2>Delos</h2>
+<figure>
+<img data-src="img/delos.png" alt="Facebook’s Logging System" />
+<figcaption aria-hidden="true">Facebook’s Logging System</figcaption>
+</figure>
+</section>
+<section class="slide level3">
+
+<ul>
+<li><p>Configuration includes which sequence numbers goes to which
+loglet.</p></li>
+<li><p>Stores current configuration in a separate MetaStore, running
+Paxos.</p></li>
+<li><p>Reconfiguration policy: Seals current config, which may lead to
+failing appends, write new config, resume.</p></li>
+<li><p>Can even use different consensus protocols altogether in the
+loglets.</p></li>
+</ul>
+</section>
+
+<section id="raft" class="title-slide slide level2">
+<h2>Raft</h2>
+<ul>
+<li><p>Reconfiguration as part of the log.</p></li>
+<li><p>Single nodes can join and leave directly on appending a
+Reconfiguration command.</p></li>
+<li><p>Wait for the last Reconfiguration command to fire the new
+one.</p></li>
+<li><p>There’s one more system to make arbitrary changes:</p></li>
+</ul>
+</section>
+<section class="slide level3">
+
+<figure>
+<img data-src="img/joint-consensus.png" alt="Joint Consensus" />
+<figcaption aria-hidden="true">Joint Consensus</figcaption>
+</figure>
+</section>
+
+<section id="dyno" class="title-slide slide level2">
+<h2>Dyno</h2>
+<p>In a BFT setting, a node can’t directly execute a Reconfiguration
+command on receiving.</p>
+<p>Why?</p>
+<ul>
+<li class="fragment">The leader may be equivocating!!</li>
+</ul>
+</section>
+<section class="slide level3">
+
+<p>Clients in BFT need <span class="math inline">\(f + 1\)</span>
+responses.</p>
+<ul>
+<li class="fragment">Which <span class="math inline">\(f\)</span>?</li>
+</ul>
+</section>
+<section class="slide level3">
+
+<figure>
+<img data-src="img/dyno-definitions.png" alt="Remember this?" />
+<figcaption aria-hidden="true"><em>Remember this?</em></figcaption>
+</figure>
+<p>WIP</p>
+</section>
+
+<section id="casper" class="title-slide slide level2">
+<h2>Casper</h2>
+
+</section>
+</section>
+<section id="are-we-done" class="title-slide slide level1">
+<h1>Are we done?</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js/plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: true,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
